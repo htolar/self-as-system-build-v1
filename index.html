@@ -1,1 +1,1209 @@
-#TEST NOTE#
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Five Canvas Sketches</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:#08080d;color:#dff;font-family:Arial,sans-serif}
+h1{margin:0 0 24px;font-size:28px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{min-width:0;border:1px solid rgba(170,255,245,.22);border-radius:12px;overflow:hidden;background:#0b1012}
+h2{margin:0;padding:12px 14px;font-size:16px;font-weight:500}
+.preview{height:360px;background:#08080d}
+iframe{width:100%;height:100%;border:0;display:block}
+p{margin:0;padding:14px 16px;color:#cfe;line-height:1.55;border-top:1px solid rgba(170,255,245,.16)}
+details{border-top:1px solid rgba(170,255,245,.16)}
+summary{cursor:pointer;padding:12px 14px;color:#bff}
+pre{margin:0;padding:14px;max-height:420px;overflow:auto;background:#050708;color:#cfe;font:12px/1.45 monospace;white-space:pre-wrap}
+.card:nth-child(5){grid-column:1/-1}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.card:nth-child(5){grid-column:auto}}
+
+/* Tab Styling */
+.tab-container { border-bottom: 1px solid rgba(170,255,245,.22); background: #050708; display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 8px 0; }
+.tab-btn { background: transparent; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; color: #8ab; padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.2s; }
+.tab-btn:hover { color: #dff; background: rgba(170,255,245,.05); }
+.tab-btn.active { background: #0b1012; color: #aafff5; border-color: rgba(170,255,245,.22); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+</style></head><body>
+<h1>Five Canvas Sketches</h1><div class="grid">
+<section class='card'><h2>Sketch 1 — Irregular Ovals</h2><div class='preview'><iframe srcdoc="&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #08080d;
+}
+
+canvas {
+    display: block;
+}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id=&#x27;canvas&#x27;&gt;&lt;/canvas&gt;&lt;script&gt;const canvas = document.getElementById(&quot;canvas&quot;);
+const ctx = canvas.getContext(&quot;2d&quot;);
+
+let W, H;
+
+function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+
+    createBlobs();
+}
+
+window.addEventListener(&quot;resize&quot;, resize);
+
+const ovalWidth = 90;
+const ovalHeight = 45;
+
+const spacingX = 120;
+const spacingY = 75;
+
+let blobs = [];
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            blobs.push({
+                x: col * spacingX + spacingX / 2,
+                y: row * spacingY + spacingY / 2,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.2,
+                points: 40,
+                shape: Array.from({ length: 40 }, () =&gt; 0.94 + Math.random() * 0.12)
+            });
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const x = Math.cos(angle) * (blob.width / 2) * blob.shape[index];
+        const y = Math.sin(angle) * (blob.height / 2) * blob.shape[index];
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = &quot;rgba(100, 220, 210, 0.25)&quot;;
+    ctx.fill();
+    ctx.strokeStyle = &quot;rgba(170, 255, 245, 0.5)&quot;;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+resize();
+draw();&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div><p>The rule/ mechanism being tested is the sigil/ the ability to make random shapes/ the same style shape. At first I tested two different things so I had to remove that and it was too jagged for my taste originally so I got rid of that too. Finally for this one there were no input controls.</p><details><summary>JavaScript drawing code</summary><pre>const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let W, H;
+
+function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+
+    createBlobs();
+}
+
+window.addEventListener("resize", resize);
+
+const ovalWidth = 90;
+const ovalHeight = 45;
+
+const spacingX = 120;
+const spacingY = 75;
+
+let blobs = [];
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            blobs.push({
+                x: col * spacingX + spacingX / 2,
+                y: row * spacingY + spacingY / 2,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.2,
+                points: 40,
+                shape: Array.from({ length: 40 }, () =&gt; 0.94 + Math.random() * 0.12)
+            });
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const x = Math.cos(angle) * (blob.width / 2) * blob.shape[index];
+        const y = Math.sin(angle) * (blob.height / 2) * blob.shape[index];
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = "rgba(100, 220, 210, 0.25)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(170, 255, 245, 0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+resize();
+draw();</pre></details></section>
+
+<section class='card'><h2>Sketch 2 — Mouse-Deformed Ovals</h2><div class='preview'><iframe srcdoc="&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #08080d;
+}
+
+canvas {
+    display: block;
+}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id=&#x27;canvas&#x27;&gt;&lt;/canvas&gt;&lt;script&gt;const canvas = document.getElementById(&quot;canvas&quot;);
+const ctx = canvas.getContext(&quot;2d&quot;);
+
+let W, H;
+
+function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+    createBlobs();
+}
+
+window.addEventListener(&quot;resize&quot;, resize);
+
+const mouse = { x: -1000, y: -1000 };
+
+window.addEventListener(&quot;mousemove&quot;, e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+const ovalWidth = 85;
+const ovalHeight = 45;
+const spacingX = 120;
+const spacingY = 75;
+
+let blobs = [];
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            blobs.push({
+                x: col * spacingX + spacingX / 2,
+                y: row * spacingY + spacingY / 2,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.15,
+                points: 40,
+                deformation: Array(40).fill(0)
+            });
+        }
+    }
+}
+
+function updateBlobs() {
+    for (const blob of blobs) {
+        for (let i = 0; i &lt; blob.points; i++) {
+            const angle = (i / blob.points) * Math.PI * 2;
+            const baseX = blob.x + Math.cos(angle) * blob.width / 2;
+            const baseY = blob.y + Math.sin(angle) * blob.height / 2;
+            const dx = mouse.x - baseX;
+            const dy = mouse.y - baseY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance &lt; 35) {
+                const strength = 1 - distance / 35;
+                blob.deformation[i] += strength * 8;
+            }
+            blob.deformation[i] *= 0.88;
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        let x = cos * blob.width / 2;
+        let y = sin * blob.height / 2;
+        const deformation = blob.deformation[index];
+
+        x += cos * deformation;
+        y += sin * deformation;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = &quot;rgba(100, 220, 210, 0.25)&quot;;
+    ctx.fill();
+    ctx.strokeStyle = &quot;rgba(170, 255, 245, 0.5)&quot;;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    updateBlobs();
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+resize();
+draw();&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div><p>For this the mechanism being tested is the deforming when the cursor is touching it. The input for this one is you dragging around your mouse/ cursor which in turn outputs the disformation of the oval. It also still made it too jagged originally so I asked it to make it more smooth.</p><details><summary>JavaScript drawing code</summary><pre>const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let W, H;
+
+function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+    createBlobs();
+}
+
+window.addEventListener("resize", resize);
+
+const mouse = { x: -1000, y: -1000 };
+
+window.addEventListener("mousemove", e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+const ovalWidth = 85;
+const ovalHeight = 45;
+const spacingX = 120;
+const spacingY = 75;
+
+let blobs = [];
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            blobs.push({
+                x: col * spacingX + spacingX / 2,
+                y: row * spacingY + spacingY / 2,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.15,
+                points: 40,
+                deformation: Array(40).fill(0)
+            });
+        }
+    }
+}
+
+function updateBlobs() {
+    for (const blob of blobs) {
+        for (let i = 0; i &lt; blob.points; i++) {
+            const angle = (i / blob.points) * Math.PI * 2;
+            const baseX = blob.x + Math.cos(angle) * blob.width / 2;
+            const baseY = blob.y + Math.sin(angle) * blob.height / 2;
+            const dx = mouse.x - baseX;
+            const dy = mouse.y - baseY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance &lt; 35) {
+                const strength = 1 - distance / 35;
+                blob.deformation[i] += strength * 8;
+            }
+            blob.deformation[i] *= 0.88;
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        let x = cos * blob.width / 2;
+        let y = sin * blob.height / 2;
+        const deformation = blob.deformation[index];
+
+        x += cos * deformation;
+        y += sin * deformation;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = "rgba(100, 220, 210, 0.25)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(170, 255, 245, 0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    updateBlobs();
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+resize();
+draw();</pre></details></section>
+
+<section class='card'><h2>Sketch 3 — Draggable Water Blobs</h2><div class='preview'><iframe srcdoc="&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #08080d;
+}
+
+canvas {
+    display: block;
+    cursor: grab;
+}
+
+canvas:active {
+    cursor: grabbing;
+}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id=&#x27;canvas&#x27;&gt;&lt;/canvas&gt;&lt;script&gt;const canvas = document.getElementById(&quot;canvas&quot;);
+const ctx = canvas.getContext(&quot;2d&quot;);
+
+let W, H;
+const ovalWidth = 90;
+const ovalHeight = 45;
+const spacingX = 120;
+const spacingY = 75;
+
+let blobs = [];
+
+const mouse = { x: 0, y: 0, down: false };
+let draggedBlob = null;
+let grabOffsetX = 0;
+let grabOffsetY = 0;
+
+canvas.addEventListener(&quot;pointerdown&quot;, e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.down = true;
+
+    for (let i = blobs.length - 1; i &gt;= 0; i--) {
+        const blob = blobs[i];
+        const dx = mouse.x - blob.x;
+        const dy = mouse.y - blob.y;
+        const inside = (dx * dx) / ((blob.width / 2) ** 2) + (dy * dy) / ((blob.height / 2) ** 2) &lt; 1;
+
+        if (inside) {
+            draggedBlob = blob;
+            grabOffsetX = mouse.x - blob.x;
+            grabOffsetY = mouse.y - blob.y;
+            blobs.splice(i, 1);
+            blobs.push(blob);
+            break;
+        }
+    }
+});
+
+canvas.addEventListener(&quot;pointermove&quot;, e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    if (draggedBlob) {
+        draggedBlob.targetX = mouse.x - grabOffsetX;
+        draggedBlob.targetY = mouse.y - grabOffsetY;
+    }
+});
+
+window.addEventListener(&quot;pointerup&quot;, () =&gt; {
+    mouse.down = false;
+    if (draggedBlob) {
+        draggedBlob.dragging = false;
+        draggedBlob = null;
+    }
+});
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            const x = col * spacingX + spacingX / 2;
+            const y = row * spacingY + spacingY / 2;
+
+            blobs.push({
+                x: x, y: y, targetX: x, targetY: y,
+                vx: 0, vy: 0,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.2,
+                points: 40,
+                shape: Array.from({ length: 40 }, () =&gt; 0.94 + Math.random() * 0.12),
+                deformation: Array(40).fill(0),
+                deformationVelocity: Array(40).fill(0)
+            });
+        }
+    }
+}
+
+function updateBlobs() {
+    for (const blob of blobs) {
+        if (blob === draggedBlob) {
+            blob.targetX = mouse.x - grabOffsetX;
+            blob.targetY = mouse.y - grabOffsetY;
+        }
+
+        const dx = blob.targetX - blob.x;
+        const dy = blob.targetY - blob.y;
+
+        blob.vx += dx * 0.08;
+        blob.vy += dy * 0.08;
+        blob.vx *= 0.78;
+        blob.vy *= 0.78;
+        blob.x += blob.vx;
+        blob.y += blob.vy;
+
+        for (let i = 0; i &lt; blob.points; i++) {
+            const angle = (i / blob.points) * Math.PI * 2;
+            const movement = blob.vx * Math.cos(angle) + blob.vy * Math.sin(angle);
+
+            blob.deformationVelocity[i] += -movement * 0.35;
+            blob.deformationVelocity[i] += -blob.deformation[i] * 0.08;
+            blob.deformationVelocity[i] *= 0.86;
+            blob.deformation[i] += blob.deformationVelocity[i];
+            blob.deformation[i] *= 0.995;
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const deformation = blob.deformation[index];
+        const radius = blob.shape[index];
+
+        const x = Math.cos(angle) * (blob.width / 2) * radius + Math.cos(angle) * deformation;
+        const y = Math.sin(angle) * (blob.height / 2) * radius + Math.sin(angle) * deformation;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = &quot;rgba(100, 220, 210, 0.25)&quot;;
+    ctx.fill();
+    ctx.strokeStyle = &quot;rgba(170, 255, 245, 0.5)&quot;;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    updateBlobs();
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    createBlobs();
+}
+
+window.addEventListener(&quot;resize&quot;, resize);
+resize();
+draw();&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div><p>The mechanism being tested is the dragging of the circles and seeing how they are effected. The input is clicking and dragging with the cursor. I didn't adjust anything when done.</p><details><summary>JavaScript drawing code</summary><pre>const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let W, H;
+const ovalWidth = 90;
+const ovalHeight = 45;
+const spacingX = 120;
+const spacingY = 75;
+
+let blobs = [];
+
+const mouse = { x: 0, y: 0, down: false };
+let draggedBlob = null;
+let grabOffsetX = 0;
+let grabOffsetY = 0;
+
+canvas.addEventListener("pointerdown", e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.down = true;
+
+    for (let i = blobs.length - 1; i &gt;= 0; i--) {
+        const blob = blobs[i];
+        const dx = mouse.x - blob.x;
+        const dy = mouse.y - blob.y;
+        const inside = (dx * dx) / ((blob.width / 2) ** 2) + (dy * dy) / ((blob.height / 2) ** 2) &lt; 1;
+
+        if (inside) {
+            draggedBlob = blob;
+            grabOffsetX = mouse.x - blob.x;
+            grabOffsetY = mouse.y - blob.y;
+            blobs.splice(i, 1);
+            blobs.push(blob);
+            break;
+        }
+    }
+});
+
+canvas.addEventListener("pointermove", e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    if (draggedBlob) {
+        draggedBlob.targetX = mouse.x - grabOffsetX;
+        draggedBlob.targetY = mouse.y - grabOffsetY;
+    }
+});
+
+window.addEventListener("pointerup", () =&gt; {
+    mouse.down = false;
+    if (draggedBlob) {
+        draggedBlob.dragging = false;
+        draggedBlob = null;
+    }
+});
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            const x = col * spacingX + spacingX / 2;
+            const y = row * spacingY + spacingY / 2;
+
+            blobs.push({
+                x: x, y: y, targetX: x, targetY: y,
+                vx: 0, vy: 0,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.2,
+                points: 40,
+                shape: Array.from({ length: 40 }, () =&gt; 0.94 + Math.random() * 0.12),
+                deformation: Array(40).fill(0),
+                deformationVelocity: Array(40).fill(0)
+            });
+        }
+    }
+}
+
+function updateBlobs() {
+    for (const blob of blobs) {
+        if (blob === draggedBlob) {
+            blob.targetX = mouse.x - grabOffsetX;
+            blob.targetY = mouse.y - grabOffsetY;
+        }
+
+        const dx = blob.targetX - blob.x;
+        const dy = blob.targetY - blob.y;
+
+        blob.vx += dx * 0.08;
+        blob.vy += dy * 0.08;
+        blob.vx *= 0.78;
+        blob.vy *= 0.78;
+        blob.x += blob.vx;
+        blob.y += blob.vy;
+
+        for (let i = 0; i &lt; blob.points; i++) {
+            const angle = (i / blob.points) * Math.PI * 2;
+            const movement = blob.vx * Math.cos(angle) + blob.vy * Math.sin(angle);
+
+            blob.deformationVelocity[i] += -movement * 0.35;
+            blob.deformationVelocity[i] += -blob.deformation[i] * 0.08;
+            blob.deformationVelocity[i] *= 0.86;
+            blob.deformation[i] += blob.deformationVelocity[i];
+            blob.deformation[i] *= 0.995;
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const deformation = blob.deformation[index];
+        const radius = blob.shape[index];
+
+        const x = Math.cos(angle) * (blob.width / 2) * radius + Math.cos(angle) * deformation;
+        const y = Math.sin(angle) * (blob.height / 2) * radius + Math.sin(angle) * deformation;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = "rgba(100, 220, 210, 0.25)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(170, 255, 245, 0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    updateBlobs();
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    createBlobs();
+}
+
+window.addEventListener("resize", resize);
+resize();
+draw();</pre></details></section>
+
+<section class='card'><h2>Sketch 4 — Gravity + Water Blobs</h2><div class='preview'><iframe srcdoc="&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #08080d;
+}
+
+canvas {
+    display: block;
+    cursor: grab;
+}
+
+canvas:active {
+    cursor: grabbing;
+}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id=&#x27;canvas&#x27;&gt;&lt;/canvas&gt;&lt;script&gt;const canvas = document.getElementById(&quot;canvas&quot;);
+const ctx = canvas.getContext(&quot;2d&quot;);
+
+let W, H;
+const ovalWidth = 90;
+const ovalHeight = 45;
+const spacingX = 120;
+const spacingY = 75;
+const gravity = 0.18;
+const bounce = 0.55;
+
+let blobs = [];
+const mouse = { x: 0, y: 0 };
+let draggedBlob = null;
+let grabOffsetX = 0;
+let grabOffsetY = 0;
+
+canvas.addEventListener(&quot;pointerdown&quot;, e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
+    for (let i = blobs.length - 1; i &gt;= 0; i--) {
+        const blob = blobs[i];
+        const dx = mouse.x - blob.x;
+        const dy = mouse.y - blob.y;
+        const inside = (dx * dx) / ((blob.width / 2) ** 2) + (dy * dy) / ((blob.height / 2) ** 2) &lt; 1;
+
+        if (inside) {
+            draggedBlob = blob;
+            grabOffsetX = mouse.x - blob.x;
+            grabOffsetY = mouse.y - blob.y;
+            blobs.splice(i, 1);
+            blobs.push(blob);
+            break;
+        }
+    }
+});
+
+canvas.addEventListener(&quot;pointermove&quot;, e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+window.addEventListener(&quot;pointerup&quot;, () =&gt; {
+    if (draggedBlob) {
+        draggedBlob.vx *= 1.2;
+        draggedBlob.vy *= 1.2;
+        draggedBlob = null;
+    }
+});
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            const x = col * spacingX + spacingX / 2;
+            const y = row * spacingY + spacingY / 2;
+
+            blobs.push({
+                x: x, y: y,
+                vx: 0, vy: 0,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.2,
+                points: 40,
+                shape: Array.from({ length: 40 }, () =&gt; 0.94 + Math.random() * 0.12),
+                deformation: Array(40).fill(0),
+                deformationVelocity: Array(40).fill(0)
+            });
+        }
+    }
+}
+
+function updateBlobs() {
+    for (const blob of blobs) {
+        if (blob === draggedBlob) {
+            blob.x = mouse.x - grabOffsetX;
+            blob.y = mouse.y - grabOffsetY;
+            blob.vx *= 0.8;
+            blob.vy *= 0.8;
+        } else {
+            blob.vy += gravity;
+            blob.vx *= 0.995;
+            blob.vy *= 0.995;
+            blob.x += blob.vx;
+            blob.y += blob.vy;
+
+            const bottom = H - blob.height / 2;
+            if (blob.y &gt; bottom) {
+                blob.y = bottom;
+                blob.vy *= -bounce;
+                blob.vx *= 0.88;
+                if (Math.abs(blob.vy) &lt; 0.5) blob.vy = 0;
+            }
+
+            const left = blob.width / 2;
+            const right = W - blob.width / 2;
+
+            if (blob.x &lt; left) { blob.x = left; blob.vx *= -bounce; }
+            if (blob.x &gt; right) { blob.x = right; blob.vx *= -bounce; }
+        }
+
+        for (let i = 0; i &lt; blob.points; i++) {
+            const angle = (i / blob.points) * Math.PI * 2;
+            const movement = blob.vx * Math.cos(angle) + blob.vy * Math.sin(angle);
+
+            blob.deformationVelocity[i] -= movement * 0.25;
+            blob.deformationVelocity[i] -= blob.deformation[i] * 0.08;
+            blob.deformationVelocity[i] *= 0.86;
+            blob.deformation[i] += blob.deformationVelocity[i];
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const deformation = blob.deformation[index];
+        const radius = blob.shape[index];
+
+        const x = Math.cos(angle) * (blob.width / 2) * radius + Math.cos(angle) * deformation;
+        const y = Math.sin(angle) * (blob.height / 2) * radius + Math.sin(angle) * deformation;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = &quot;rgba(100, 220, 210, 0.25)&quot;;
+    ctx.fill();
+    ctx.strokeStyle = &quot;rgba(170, 255, 245, 0.5)&quot;;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    updateBlobs();
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    createBlobs();
+}
+
+window.addEventListener(&quot;resize&quot;, resize);
+resize();
+draw();&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div><p>The rule being tested in this final one is gravity and how they affect the looks and behavior of the blob. Their is no input for this test, and there were no changes made for this one.</p><details><summary>JavaScript drawing code</summary><pre>const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let W, H;
+const ovalWidth = 90;
+const ovalHeight = 45;
+const spacingX = 120;
+const spacingY = 75;
+const gravity = 0.18;
+const bounce = 0.55;
+
+let blobs = [];
+const mouse = { x: 0, y: 0 };
+let draggedBlob = null;
+let grabOffsetX = 0;
+let grabOffsetY = 0;
+
+canvas.addEventListener("pointerdown", e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
+    for (let i = blobs.length - 1; i &gt;= 0; i--) {
+        const blob = blobs[i];
+        const dx = mouse.x - blob.x;
+        const dy = mouse.y - blob.y;
+        const inside = (dx * dx) / ((blob.width / 2) ** 2) + (dy * dy) / ((blob.height / 2) ** 2) &lt; 1;
+
+        if (inside) {
+            draggedBlob = blob;
+            grabOffsetX = mouse.x - blob.x;
+            grabOffsetY = mouse.y - blob.y;
+            blobs.splice(i, 1);
+            blobs.push(blob);
+            break;
+        }
+    }
+});
+
+canvas.addEventListener("pointermove", e =&gt; {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+window.addEventListener("pointerup", () =&gt; {
+    if (draggedBlob) {
+        draggedBlob.vx *= 1.2;
+        draggedBlob.vy *= 1.2;
+        draggedBlob = null;
+    }
+});
+
+function createBlobs() {
+    blobs = [];
+    const columns = Math.ceil(W / spacingX) + 1;
+    const rows = Math.ceil(H / spacingY) + 1;
+
+    for (let row = 0; row &lt; rows; row++) {
+        for (let col = 0; col &lt; columns; col++) {
+            const x = col * spacingX + spacingX / 2;
+            const y = row * spacingY + spacingY / 2;
+
+            blobs.push({
+                x: x, y: y,
+                vx: 0, vy: 0,
+                width: ovalWidth * (0.85 + Math.random() * 0.3),
+                height: ovalHeight * (0.85 + Math.random() * 0.3),
+                rotation: (Math.random() - 0.5) * 0.2,
+                points: 40,
+                shape: Array.from({ length: 40 }, () =&gt; 0.94 + Math.random() * 0.12),
+                deformation: Array(40).fill(0),
+                deformationVelocity: Array(40).fill(0)
+            });
+        }
+    }
+}
+
+function updateBlobs() {
+    for (const blob of blobs) {
+        if (blob === draggedBlob) {
+            blob.x = mouse.x - grabOffsetX;
+            blob.y = mouse.y - grabOffsetY;
+            blob.vx *= 0.8;
+            blob.vy *= 0.8;
+        } else {
+            blob.vy += gravity;
+            blob.vx *= 0.995;
+            blob.vy *= 0.995;
+            blob.x += blob.vx;
+            blob.y += blob.vy;
+
+            const bottom = H - blob.height / 2;
+            if (blob.y &gt; bottom) {
+                blob.y = bottom;
+                blob.vy *= -bounce;
+                blob.vx *= 0.88;
+                if (Math.abs(blob.vy) &lt; 0.5) blob.vy = 0;
+            }
+
+            const left = blob.width / 2;
+            const right = W - blob.width / 2;
+
+            if (blob.x &lt; left) { blob.x = left; blob.vx *= -bounce; }
+            if (blob.x &gt; right) { blob.x = right; blob.vx *= -bounce; }
+        }
+
+        for (let i = 0; i &lt; blob.points; i++) {
+            const angle = (i / blob.points) * Math.PI * 2;
+            const movement = blob.vx * Math.cos(angle) + blob.vy * Math.sin(angle);
+
+            blob.deformationVelocity[i] -= movement * 0.25;
+            blob.deformationVelocity[i] -= blob.deformation[i] * 0.08;
+            blob.deformationVelocity[i] *= 0.86;
+            blob.deformation[i] += blob.deformationVelocity[i];
+        }
+    }
+}
+
+function drawBlob(blob) {
+    ctx.save();
+    ctx.translate(blob.x, blob.y);
+    ctx.rotate(blob.rotation);
+    ctx.beginPath();
+
+    for (let i = 0; i &lt;= blob.points; i++) {
+        const index = i % blob.points;
+        const angle = (index / blob.points) * Math.PI * 2;
+        const deformation = blob.deformation[index];
+        const radius = blob.shape[index];
+
+        const x = Math.cos(angle) * (blob.width / 2) * radius + Math.cos(angle) * deformation;
+        const y = Math.sin(angle) * (blob.height / 2) * radius + Math.sin(angle) * deformation;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = "rgba(100, 220, 210, 0.25)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(170, 255, 245, 0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    updateBlobs();
+    for (const blob of blobs) drawBlob(blob);
+    requestAnimationFrame(draw);
+}
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    createBlobs();
+}
+
+window.addEventListener("resize", resize);
+resize();
+draw();</pre></details></section>
+
+<section class='card'>
+  <h2>Sketch 5 — Splitting Variations</h2>
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="openTab(event, 'tab1')">Original (5)</button>
+    <button class="tab-btn" onclick="openTab(event, 'tab2')">5 + 2 (Mouse Ripple)</button>
+    <button class="tab-btn" onclick="openTab(event, 'tab3')">5 + 3 (Draggable)</button>
+    <button class="tab-btn" onclick="openTab(event, 'tab4')">5 + 4 (Gravity)</button>
+    <button class="tab-btn" onclick="openTab(event, 'tab5')">All Combined</button>
+  </div>
+
+  <!-- Tab 1: Original Sketch 5 -->
+  <div id="tab1" class="tab-content active">
+    <div class='preview'><iframe srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id='canvas'&gt;&lt;/canvas&gt;&lt;script&gt;
+    const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, blobs = [], splitting = false, splitTime = 0; const SX = 112, SY = 72;
+    function resize() { W = canvas.width = Math.max(1, innerWidth); H = canvas.height = Math.max(1, innerHeight); makeBlobs(); }
+    addEventListener('resize', resize);
+    function makeBlob(x, y, scale = 1) { const n = 36; return { x, y, vx: 0, vy: 0, w: 82 * scale * (0.9 + Math.random() * 0.2), h: 42 * scale * (0.9 + Math.random() * 0.2), rot: (Math.random() - 0.5) * 0.15, n, shape: Array.from({ length: n }, () => 0.94 + Math.random() * 0.12) }; }
+    function makeBlobs() { blobs = []; for (let y = SY / 2; y < H + SY; y += SY) { for (let x = SX / 2; x < W + SX; x += SX) { blobs.push(makeBlob(x, y)); } } }
+    function drawBlob(b) { ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.beginPath(); for (let i = 0; i <= b.n; i++) { const j = i % b.n, a = j / b.n * Math.PI * 2, s = b.shape[j]; const x = Math.cos(a) * b.w / 2 * s, y = Math.sin(a) * b.h / 2 * s; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function drawDividingBlob(b, progress) { const p = progress * progress * (3 - 2 * progress), length = b.w * (1 + 0.58 * p), height = b.h * (1 - 0.05 * p), pinch = Math.max(0.001, 1 - p); ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.splitAngle); ctx.beginPath(); const n = 72; for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, c = Math.cos(a), si = Math.sin(a), shape = b.shape[Math.floor((i % n) / n * b.n)]; const centerFactor = Math.pow(Math.abs(c), 0.62), middlePinch = pinch + (1 - pinch) * centerFactor; const x = c * length / 2 * shape, y = si * height / 2 * middlePinch * shape; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function startSplit() { if (splitting) return; splitting = true; splitTime = 0; blobs.forEach(b => { b.splitAngle = b.rot; }); }
+    addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); startSplit(); } });
+    function updateSplit(dt) { splitTime += dt; const raw = Math.min(splitTime / 1500, 1), p = raw * raw * (3 - 2 * raw); for (const b of blobs) drawDividingBlob(b, p); if (raw >= 1) { const newBlobs = []; for (const b of blobs) { const distance = b.w * 1.58 * 0.28; const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, 0.65); const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, 0.65); left.shape = [...b.shape]; right.shape = [...b.shape]; left.rot = right.rot = b.splitAngle; left.vx = -Math.cos(b.splitAngle) * 0.3; left.vy = -Math.sin(b.splitAngle) * 0.3; right.vx = Math.cos(b.splitAngle) * 0.3; right.vy = Math.sin(b.splitAngle) * 0.3; newBlobs.push(left, right); } blobs = newBlobs; splitting = false; } }
+    let last = performance.now(); function loop(now) { const dt = Math.min(now - last, 32); last = now; ctx.clearRect(0, 0, W, H); if (splitting) updateSplit(dt); else { for (const b of blobs) { b.vx *= 0.965; b.vy *= 0.965; b.x += b.vx; b.y += b.vy; drawBlob(b); } } requestAnimationFrame(loop); } resize(); requestAnimationFrame(loop);
+    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div>
+    <p>Original Sketch 5: Splitting blobs with physics-aligned smooth pinching. Press Space to trigger splitting.</p>
+  </div>
+
+  <!-- Tab 2: Sketch 5 + 2 -->
+  <div id="tab2" class="tab-content">
+    <div class='preview'><iframe srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id='canvas'&gt;&lt;/canvas&gt;&lt;script&gt;
+    const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, blobs = [], splitting = false, splitTime = 0; const SX = 112, SY = 72;
+    const mouse = { x: -1000, y: -1000 }; window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    function resize() { W = canvas.width = Math.max(1, innerWidth); H = canvas.height = Math.max(1, innerHeight); makeBlobs(); }
+    addEventListener('resize', resize);
+    function makeBlob(x, y, scale = 1) { const n = 36; return { x, y, vx: 0, vy: 0, w: 82 * scale * (0.9 + Math.random() * 0.2), h: 42 * scale * (0.9 + Math.random() * 0.2), rot: (Math.random() - 0.5) * 0.15, n, shape: Array.from({ length: n }, () => 0.94 + Math.random() * 0.12), deformation: Array(n).fill(0) }; }
+    function makeBlobs() { blobs = []; for (let y = SY / 2; y < H + SY; y += SY) { for (let x = SX / 2; x < W + SX; x += SX) { blobs.push(makeBlob(x, y)); } } }
+    function updateDeformation(b) { for (let i = 0; i < b.n; i++) { const a = (i / b.n) * Math.PI * 2; const baseX = b.x + Math.cos(a + b.rot) * (b.w / 2); const baseY = b.y + Math.sin(a + b.rot) * (b.h / 2); const dx = mouse.x - baseX, dy = mouse.y - baseY; const dist = Math.sqrt(dx * dx + dy * dy); if (dist < 35) { b.deformation[i] += (1 - dist / 35) * 8; } b.deformation[i] *= 0.88; } }
+    function drawBlob(b) { ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.beginPath(); for (let i = 0; i <= b.n; i++) { const j = i % b.n, a = j / b.n * Math.PI * 2, s = b.shape[j]; const def = b.deformation[j]; const x = Math.cos(a) * (b.w / 2) * s + Math.cos(a) * def; const y = Math.sin(a) * (b.h / 2) * s + Math.sin(a) * def; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function drawDividingBlob(b, progress) { const p = progress * progress * (3 - 2 * progress), length = b.w * (1 + 0.58 * p), height = b.h * (1 - 0.05 * p), pinch = Math.max(0.001, 1 - p); ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.splitAngle); ctx.beginPath(); const n = 72; for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, c = Math.cos(a), si = Math.sin(a), shape = b.shape[Math.floor((i % n) / n * b.n)]; const centerFactor = Math.pow(Math.abs(c), 0.62), middlePinch = pinch + (1 - pinch) * centerFactor; const x = c * length / 2 * shape, y = si * height / 2 * middlePinch * shape; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function startSplit() { if (splitting) return; splitting = true; splitTime = 0; blobs.forEach(b => { b.splitAngle = b.rot; }); }
+    addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); startSplit(); } });
+    function updateSplit(dt) { splitTime += dt; const raw = Math.min(splitTime / 1500, 1), p = raw * raw * (3 - 2 * raw); for (const b of blobs) drawDividingBlob(b, p); if (raw >= 1) { const newBlobs = []; for (const b of blobs) { const distance = b.w * 1.58 * 0.28; const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, 0.65); const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, 0.65); left.shape = [...b.shape]; right.shape = [...b.shape]; left.rot = right.rot = b.splitAngle; left.vx = -Math.cos(b.splitAngle) * 0.3; left.vy = -Math.sin(b.splitAngle) * 0.3; right.vx = Math.cos(b.splitAngle) * 0.3; right.vy = Math.sin(b.splitAngle) * 0.3; newBlobs.push(left, right); } blobs = newBlobs; splitting = false; } }
+    let last = performance.now(); function loop(now) { const dt = Math.min(now - last, 32); last = now; ctx.clearRect(0, 0, W, H); if (splitting) updateSplit(dt); else { for (const b of blobs) { b.vx *= 0.965; b.vy *= 0.965; b.x += b.vx; b.y += b.vy; updateDeformation(b); drawBlob(b); } } requestAnimationFrame(loop); } resize(); requestAnimationFrame(loop);
+    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div>
+    <p>Sketch 5 + Sketch 2: Blobs can split on Space, and their edges smoothly ripple when hovered over by the mouse cursor.</p>
+  </div>
+
+  <!-- Tab 3: Sketch 5 + 3 -->
+  <div id="tab3" class="tab-content">
+    <div class='preview'><iframe srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%;cursor:grab}canvas:active{cursor:grabbing}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id='canvas'&gt;&lt;/canvas&gt;&lt;script&gt;
+    const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, blobs = [], splitting = false, splitTime = 0; const SX = 112, SY = 72;
+    const mouse = { x: 0, y: 0 }; let draggedBlob = null, grabOffsetX = 0, grabOffsetY = 0;
+    canvas.addEventListener('pointerdown', e => { mouse.x = e.clientX; mouse.y = e.clientY; for (let i = blobs.length - 1; i >= 0; i--) { const b = blobs[i], dx = mouse.x - b.x, dy = mouse.y - b.y; if ((dx*dx)/((b.w/2)**2) + (dy*dy)/((b.h/2)**2) < 1) { draggedBlob = b; grabOffsetX = dx; grabOffsetY = dy; b.targetX = b.x; b.targetY = b.y; blobs.splice(i, 1); blobs.push(b); break; } } });
+    canvas.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; if (draggedBlob) { draggedBlob.targetX = mouse.x - grabOffsetX; draggedBlob.targetY = mouse.y - grabOffsetY; } });
+    window.addEventListener('pointerup', () => { draggedBlob = null; });
+    function resize() { W = canvas.width = Math.max(1, innerWidth); H = canvas.height = Math.max(1, innerHeight); makeBlobs(); }
+    addEventListener('resize', resize);
+    function makeBlob(x, y, scale = 1) { const n = 36; return { x, y, targetX: x, targetY: y, vx: 0, vy: 0, w: 82 * scale * (0.9 + Math.random() * 0.2), h: 42 * scale * (0.9 + Math.random() * 0.2), rot: (Math.random() - 0.5) * 0.15, n, shape: Array.from({ length: n }, () => 0.94 + Math.random() * 0.12), deformation: Array(n).fill(0), deformationVelocity: Array(n).fill(0) }; }
+    function makeBlobs() { blobs = []; for (let y = SY / 2; y < H + SY; y += SY) { for (let x = SX / 2; x < W + SX; x += SX) { blobs.push(makeBlob(x, y)); } } }
+    function drawBlob(b) { ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.beginPath(); for (let i = 0; i <= b.n; i++) { const j = i % b.n, a = j / b.n * Math.PI * 2, s = b.shape[j]; const def = b.deformation[j]; const x = Math.cos(a) * (b.w / 2) * s + Math.cos(a) * def; const y = Math.sin(a) * (b.h / 2) * s + Math.sin(a) * def; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function drawDividingBlob(b, progress) { const p = progress * progress * (3 - 2 * progress), length = b.w * (1 + 0.58 * p), height = b.h * (1 - 0.05 * p), pinch = Math.max(0.001, 1 - p); ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.splitAngle); ctx.beginPath(); const n = 72; for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, c = Math.cos(a), si = Math.sin(a), shape = b.shape[Math.floor((i % n) / n * b.n)]; const centerFactor = Math.pow(Math.abs(c), 0.62), middlePinch = pinch + (1 - pinch) * centerFactor; const x = c * length / 2 * shape, y = si * height / 2 * middlePinch * shape; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function startSplit() { if (splitting) return; splitting = true; splitTime = 0; blobs.forEach(b => { b.splitAngle = b.rot; }); }
+    addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); startSplit(); } });
+    function updateSplit(dt) { splitTime += dt; const raw = Math.min(splitTime / 1500, 1), p = raw * raw * (3 - 2 * raw); for (const b of blobs) drawDividingBlob(b, p); if (raw >= 1) { const newBlobs = []; for (const b of blobs) { const distance = b.w * 1.58 * 0.28; const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, 0.65); const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, 0.65); left.shape = [...b.shape]; right.shape = [...b.shape]; left.rot = right.rot = b.splitAngle; left.vx = -Math.cos(b.splitAngle) * 0.3; left.vy = -Math.sin(b.splitAngle) * 0.3; right.vx = Math.cos(b.splitAngle) * 0.3; right.vy = Math.sin(b.splitAngle) * 0.3; newBlobs.push(left, right); } blobs = newBlobs; splitting = false; } }
+    let last = performance.now(); function loop(now) { const dt = Math.min(now - last, 32); last = now; ctx.clearRect(0, 0, W, H); if (splitting) updateSplit(dt); else { for (const b of blobs) { if (b === draggedBlob) { b.targetX = mouse.x - grabOffsetX; b.targetY = mouse.y - grabOffsetY; } const dx = (b.targetX || b.x) - b.x, dy = (b.targetY || b.y) - b.y; b.vx += dx * 0.08; b.vy += dy * 0.08; b.vx *= 0.78; b.vy *= 0.78; b.x += b.vx; b.y += b.vy; for (let i = 0; i < b.n; i++) { const a = (i / b.n) * Math.PI * 2, movement = b.vx * Math.cos(a) + b.vy * Math.sin(a); b.deformationVelocity[i] += -movement * 0.35 - b.deformation[i] * 0.08; b.deformationVelocity[i] *= 0.86; b.deformation[i] += b.deformationVelocity[i]; b.deformation[i] *= 0.995; } drawBlob(b); } } requestAnimationFrame(loop); } resize(); requestAnimationFrame(loop);
+    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div>
+    <p>Sketch 5 + Sketch 3: Blobs can split on Space, and can be clicked and dragged around with fluid spring movement.</p>
+  </div>
+
+  <!-- Tab 4: Sketch 5 + 4 -->
+  <div id="tab4" class="tab-content">
+    <div class='preview'><iframe srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id='canvas'&gt;&lt;/canvas&gt;&lt;script&gt;
+    const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, blobs = [], splitting = false, splitTime = 0; const SX = 112, SY = 72; const gravity = 0.18, bounce = 0.55;
+    function resize() { W = canvas.width = Math.max(1, innerWidth); H = canvas.height = Math.max(1, innerHeight); makeBlobs(); }
+    addEventListener('resize', resize);
+    function makeBlob(x, y, scale = 1) { const n = 36; return { x, y, vx: 0, vy: 0, w: 82 * scale * (0.9 + Math.random() * 0.2), h: 42 * scale * (0.9 + Math.random() * 0.2), rot: (Math.random() - 0.5) * 0.15, n, shape: Array.from({ length: n }, () => 0.94 + Math.random() * 0.12), deformation: Array(n).fill(0), deformationVelocity: Array(n).fill(0) }; }
+    function makeBlobs() { blobs = []; for (let y = SY / 2; y < H + SY; y += SY) { for (let x = SX / 2; x < W + SX; x += SX) { blobs.push(makeBlob(x, y)); } } }
+    function drawBlob(b) { ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.beginPath(); for (let i = 0; i <= b.n; i++) { const j = i % b.n, a = j / b.n * Math.PI * 2, s = b.shape[j]; const def = b.deformation[j]; const x = Math.cos(a) * (b.w / 2) * s + Math.cos(a) * def; const y = Math.sin(a) * (b.h / 2) * s + Math.sin(a) * def; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function drawDividingBlob(b, progress) { const p = progress * progress * (3 - 2 * progress), length = b.w * (1 + 0.58 * p), height = b.h * (1 - 0.05 * p), pinch = Math.max(0.001, 1 - p); ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.splitAngle); ctx.beginPath(); const n = 72; for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, c = Math.cos(a), si = Math.sin(a), shape = b.shape[Math.floor((i % n) / n * b.n)]; const centerFactor = Math.pow(Math.abs(c), 0.62), middlePinch = pinch + (1 - pinch) * centerFactor; const x = c * length / 2 * shape, y = si * height / 2 * middlePinch * shape; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function startSplit() { if (splitting) return; splitting = true; splitTime = 0; blobs.forEach(b => { b.splitAngle = b.rot; }); }
+    addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); startSplit(); } });
+    function updateSplit(dt) { splitTime += dt; const raw = Math.min(splitTime / 1500, 1), p = raw * raw * (3 - 2 * raw); for (const b of blobs) drawDividingBlob(b, p); if (raw >= 1) { const newBlobs = []; for (const b of blobs) { const distance = b.w * 1.58 * 0.28; const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, 0.65); const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, 0.65); left.shape = [...b.shape]; right.shape = [...b.shape]; left.rot = right.rot = b.splitAngle; left.vx = -Math.cos(b.splitAngle) * 0.3; left.vy = -Math.sin(b.splitAngle) * 0.3; right.vx = Math.cos(b.splitAngle) * 0.3; right.vy = Math.sin(b.splitAngle) * 0.3; newBlobs.push(left, right); } blobs = newBlobs; splitting = false; } }
+    let last = performance.now(); function loop(now) { const dt = Math.min(now - last, 32); last = now; ctx.clearRect(0, 0, W, H); if (splitting) updateSplit(dt); else { for (const b of blobs) { b.vy += gravity; b.vx *= 0.995; b.vy *= 0.995; b.x += b.vx; b.y += b.vy; const bottom = H - b.h / 2; if (b.y > bottom) { b.y = bottom; b.vy *= -bounce; b.vx *= 0.88; if (Math.abs(b.vy) < 0.5) b.vy = 0; } const left = b.w / 2, right = W - b.w / 2; if (b.x < left) { b.x = left; b.vx *= -bounce; } if (b.x > right) { b.x = right; b.vx *= -bounce; } for (let i = 0; i < b.n; i++) { const a = (i / b.n) * Math.PI * 2, movement = b.vx * Math.cos(a) + b.vy * Math.sin(a); b.deformationVelocity[i] -= movement * 0.25 + b.deformation[i] * 0.08; b.deformationVelocity[i] *= 0.86; b.deformation[i] += b.deformationVelocity[i]; } drawBlob(b); } } requestAnimationFrame(loop); } resize(); requestAnimationFrame(loop);
+    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div>
+    <p>Sketch 5 + Sketch 4: Blobs split on Space and fall with gravity, bouncing off walls and floors while wobbling.</p>
+  </div>
+
+  <!-- Tab 5: All Combined -->
+  <div id="tab5" class="tab-content">
+    <div class='preview'><iframe srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;style&gt;html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080d}canvas{display:block;width:100%;height:100%;cursor:grab}canvas:active{cursor:grabbing}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;canvas id='canvas'&gt;&lt;/canvas&gt;&lt;script&gt;
+    const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, blobs = [], splitting = false, splitTime = 0; const SX = 112, SY = 72; const gravity = 0.18, bounce = 0.55;
+    const mouse = { x: -1000, y: -1000 }; let draggedBlob = null, grabOffsetX = 0, grabOffsetY = 0;
+    canvas.addEventListener('pointerdown', e => { mouse.x = e.clientX; mouse.y = e.clientY; for (let i = blobs.length - 1; i >= 0; i--) { const b = blobs[i], dx = mouse.x - b.x, dy = mouse.y - b.y; if ((dx*dx)/((b.w/2)**2) + (dy*dy)/((b.h/2)**2) < 1) { draggedBlob = b; grabOffsetX = dx; grabOffsetY = dy; blobs.splice(i, 1); blobs.push(b); break; } } });
+    canvas.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('pointerup', () => { if (draggedBlob) { draggedBlob.vx *= 1.2; draggedBlob.vy *= 1.2; draggedBlob = null; } });
+    function resize() { W = canvas.width = Math.max(1, innerWidth); H = canvas.height = Math.max(1, innerHeight); makeBlobs(); }
+    addEventListener('resize', resize);
+    function makeBlob(x, y, scale = 1) { const n = 36; return { x, y, vx: 0, vy: 0, w: 82 * scale * (0.9 + Math.random() * 0.2), h: 42 * scale * (0.9 + Math.random() * 0.2), rot: (Math.random() - 0.5) * 0.15, n, shape: Array.from({ length: n }, () => 0.94 + Math.random() * 0.12), deformation: Array(n).fill(0), deformationVelocity: Array(n).fill(0) }; }
+    function makeBlobs() { blobs = []; for (let y = SY / 2; y < H + SY; y += SY) { for (let x = SX / 2; x < W + SX; x += SX) { blobs.push(makeBlob(x, y)); } } }
+    function drawBlob(b) { ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.beginPath(); for (let i = 0; i <= b.n; i++) { const j = i % b.n, a = j / b.n * Math.PI * 2, s = b.shape[j]; const def = b.deformation[j]; const x = Math.cos(a) * (b.w / 2) * s + Math.cos(a) * def; const y = Math.sin(a) * (b.h / 2) * s + Math.sin(a) * def; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function drawDividingBlob(b, progress) { const p = progress * progress * (3 - 2 * progress), length = b.w * (1 + 0.58 * p), height = b.h * (1 - 0.05 * p), pinch = Math.max(0.001, 1 - p); ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.splitAngle); ctx.beginPath(); const n = 72; for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, c = Math.cos(a), si = Math.sin(a), shape = b.shape[Math.floor((i % n) / n * b.n)]; const centerFactor = Math.pow(Math.abs(c), 0.62), middlePinch = pinch + (1 - pinch) * centerFactor; const x = c * length / 2 * shape, y = si * height / 2 * middlePinch * shape; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fillStyle = 'rgba(100,220,210,0.25)'; ctx.fill(); ctx.strokeStyle = 'rgba(170,255,245,0.5)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+    function startSplit() { if (splitting) return; splitting = true; splitTime = 0; blobs.forEach(b => { b.splitAngle = b.rot; }); }
+    addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); startSplit(); } });
+    function updateSplit(dt) { splitTime += dt; const raw = Math.min(splitTime / 1500, 1), p = raw * raw * (3 - 2 * raw); for (const b of blobs) drawDividingBlob(b, p); if (raw >= 1) { const newBlobs = []; for (const b of blobs) { const distance = b.w * 1.58 * 0.28; const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, 0.65); const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, 0.65); left.shape = [...b.shape]; right.shape = [...b.shape]; left.rot = right.rot = b.splitAngle; left.vx = -Math.cos(b.splitAngle) * 0.3; left.vy = -Math.sin(b.splitAngle) * 0.3; right.vx = Math.cos(b.splitAngle) * 0.3; right.vy = Math.sin(b.splitAngle) * 0.3; newBlobs.push(left, right); } blobs = newBlobs; splitting = false; } }
+    let last = performance.now(); function loop(now) { const dt = Math.min(now - last, 32); last = now; ctx.clearRect(0, 0, W, H); if (splitting) updateSplit(dt); else { for (const b of blobs) { if (b === draggedBlob) { b.x = mouse.x - grabOffsetX; b.y = mouse.y - grabOffsetY; b.vx *= 0.8; b.vy *= 0.8; } else { b.vy += gravity; b.vx *= 0.995; b.vy *= 0.995; b.x += b.vx; b.y += b.vy; const bottom = H - b.h / 2; if (b.y > bottom) { b.y = bottom; b.vy *= -bounce; b.vx *= 0.88; if (Math.abs(b.vy) < 0.5) b.vy = 0; } const left = b.w / 2, right = W - b.w / 2; if (b.x < left) { b.x = left; b.vx *= -bounce; } if (b.x > right) { b.x = right; b.vx *= -bounce; } } for (let i = 0; i < b.n; i++) { const a = (i / b.n) * Math.PI * 2; const baseX = b.x + Math.cos(a + b.rot) * (b.w / 2), baseY = b.y + Math.sin(a + b.rot) * (b.h / 2); const dx = mouse.x - baseX, dy = mouse.y - baseY, dist = Math.sqrt(dx * dx + dy * dy); if (dist < 35) { b.deformation[i] += (1 - dist / 35) * 8; } const movement = b.vx * Math.cos(a) + b.vy * Math.sin(a); b.deformationVelocity[i] -= movement * 0.25 + b.deformation[i] * 0.08; b.deformationVelocity[i] *= 0.86; b.deformation[i] += b.deformationVelocity[i]; } drawBlob(b); } } requestAnimationFrame(loop); } resize(); requestAnimationFrame(loop);
+    &lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></div>
+    <p>All Combined: Full feature set featuring physics gravity, drag and drop, hover ripple, and Spacebar cell splitting.</p>
+  </div>
+</section>
+</div>
+
+<script>
+function openTab(evt, tabId) {
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(content => content.classList.remove('active'));
+
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(btn => btn.classList.remove('active'));
+
+  document.getElementById(tabId).classList.add('active');
+  evt.currentTarget.classList.add('active');
+}
+</script>
+</body></html>
