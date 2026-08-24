@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Canvas Sketch — Single Blob</title>
+<title>Canvas Sketch — Soft Collision Blobs</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -41,11 +41,11 @@
 <body>
 
 <div class="ui-overlay">
-  <strong>Single Blob Interactive</strong><br>
-  • Click &amp; drag the blob to throw it<br>
-  • Hover cursor to deform edges<br>
-  • Press <strong>Space</strong> to split into two<br>
-  • Gravity &amp; wall bounces active
+  <strong>Soft Collision &amp; Smush Blobs</strong><br>
+  • Smooth, non-teleporting soft body physics<br>
+  • Blobs squish and deform when pressed together<br>
+  • Drag mid-split or anytime smoothly<br>
+  • Press <strong>Space</strong> to split blobs
 </div>
 
 <canvas id="canvas"></canvas>
@@ -54,15 +54,20 @@
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
 
-  let W = 0, H = 0, blobs = [], splitting = false, splitTime = 0;
-  const gravity = 0.18, bounce = 0.55;
+  let W = 0, H = 0, blobs = [];
+  const bounce = 0.75;
 
-  const mouse = { x: -1000, y: -1000 };
+  const mouse = { x: -1000, y: -1000, px: -1000, py: -1000, vx: 0, vy: 0 };
   let draggedBlob = null, grabOffsetX = 0, grabOffsetY = 0;
 
   canvas.addEventListener('pointerdown', e => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
+    mouse.px = e.clientX;
+    mouse.py = e.clientY;
+    mouse.vx = 0;
+    mouse.vy = 0;
+
     for (let i = blobs.length - 1; i >= 0; i--) {
       const b = blobs[i];
       const dx = mouse.x - b.x;
@@ -85,8 +90,8 @@
 
   window.addEventListener('pointerup', () => {
     if (draggedBlob) {
-      draggedBlob.vx *= 1.2;
-      draggedBlob.vy *= 1.2;
+      draggedBlob.vx = mouse.vx * 0.8;
+      draggedBlob.vy = mouse.vy * 0.8;
       draggedBlob = null;
     }
   });
@@ -102,81 +107,31 @@
     const n = 36;
     return {
       x, y, vx: 0, vy: 0,
-      w: 82 * scale * (0.9 + Math.random() * 0.2),
-      h: 42 * scale * (0.9 + Math.random() * 0.2),
+      w: 82 * scale,
+      h: 42 * scale,
       rot: (Math.random() - 0.5) * 0.15,
       n,
       shape: Array.from({ length: n }, () => 0.94 + Math.random() * 0.12),
       deformation: Array(n).fill(0),
-      deformationVelocity: Array(n).fill(0)
+      deformationVelocity: Array(n).fill(0),
+      splitting: false,
+      splitTime: 0,
+      splitAngle: 0
     };
   }
 
   function makeSingleBlob() {
-    blobs = [makeBlob(W / 2, H / 3, 1.8)];
-  }
-
-  function drawBlob(b) {
-    ctx.save();
-    ctx.translate(b.x, b.y);
-    ctx.rotate(b.rot);
-    ctx.beginPath();
-    for (let i = 0; i <= b.n; i++) {
-      const j = i % b.n;
-      const a = j / b.n * Math.PI * 2;
-      const s = b.shape[j];
-      const def = b.deformation[j];
-      const x = Math.cos(a) * (b.w / 2) * s + Math.cos(a) * def;
-      const y = Math.sin(a) * (b.h / 2) * s + Math.sin(a) * def;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(100,220,210,0.25)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(170,255,245,0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawDividingBlob(b, progress) {
-    const p = progress * progress * (3 - 2 * progress);
-    const length = b.w * (1 + 0.58 * p);
-    const height = b.h * (1 - 0.05 * p);
-    const pinch = Math.max(0.001, 1 - p);
-
-    ctx.save();
-    ctx.translate(b.x, b.y);
-    ctx.rotate(b.splitAngle);
-    ctx.beginPath();
-    const n = 72;
-    for (let i = 0; i <= n; i++) {
-      const a = i / n * Math.PI * 2;
-      const c = Math.cos(a);
-      const si = Math.sin(a);
-      const shape = b.shape[Math.floor((i % n) / n * b.n)];
-      const centerFactor = Math.pow(Math.abs(c), 0.62);
-      const middlePinch = pinch + (1 - pinch) * centerFactor;
-      const x = c * length / 2 * shape;
-      const y = si * height / 2 * middlePinch * shape;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(100,220,210,0.25)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(170,255,245,0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.restore();
+    blobs = [makeBlob(W / 2, H / 2, 1.8)];
   }
 
   function startSplit() {
-    if (splitting) return;
-    splitting = true;
-    splitTime = 0;
-    blobs.forEach(b => { b.splitAngle = b.rot; });
+    for (const b of blobs) {
+      if (!b.splitting) {
+        b.splitting = true;
+        b.splitTime = 0;
+        b.splitAngle = b.rot;
+      }
+    }
   }
 
   addEventListener('keydown', e => {
@@ -186,30 +141,145 @@
     }
   });
 
-  function updateSplit(dt) {
-    splitTime += dt;
-    const raw = Math.min(splitTime / 1500, 1);
-    const p = raw * raw * (3 - 2 * raw);
+  function resolveSoftCollisions() {
+    for (let i = 0; i < blobs.length; i++) {
+      for (let j = i + 1; j < blobs.length; j++) {
+        const b1 = blobs[i];
+        const b2 = blobs[j];
 
-    for (const b of blobs) drawDividingBlob(b, p);
+        const dx = b2.x - b1.x;
+        const dy = b2.y - b1.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (raw >= 1) {
-      const newBlobs = [];
-      for (const b of blobs) {
+        const r1 = (b1.w + b1.h) / 4;
+        const r2 = (b2.w + b2.h) / 4;
+        const minDist = r1 + r2;
+
+        if (dist < minDist && dist > 0) {
+          const overlap = minDist - dist;
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          // Smooth velocity-based repulsion instead of instant coordinate teleportation
+          const repulsionForce = overlap * 0.08;
+
+          if (b1 !== draggedBlob) {
+            b1.vx -= nx * repulsionForce;
+            b1.vy -= ny * repulsionForce;
+            b1.x -= nx * overlap * 0.15;
+            b1.y -= ny * overlap * 0.15;
+          }
+          if (b2 !== draggedBlob) {
+            b2.vx += nx * repulsionForce;
+            b2.vy += ny * repulsionForce;
+            b2.x += nx * overlap * 0.15;
+            b2.y += ny * overlap * 0.15;
+          }
+
+          // Deform surface points along collision axis ("smush" effect)
+          deformOnCollision(b1, nx, ny, overlap);
+          deformOnCollision(b2, -nx, -ny, overlap);
+        }
+      }
+    }
+  }
+
+  function deformOnCollision(b, nx, ny, overlap) {
+    const angleToImpact = Math.atan2(ny, nx) - b.rot;
+    for (let i = 0; i < b.n; i++) {
+      const a = (i / b.n) * Math.PI * 2;
+      let diff = Math.abs(a - angleToImpact);
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      diff = Math.abs(diff);
+
+      if (diff < Math.PI / 2) {
+        const factor = Math.cos(diff);
+        b.deformationVelocity[i] -= overlap * factor * 0.08;
+      }
+    }
+  }
+
+  function drawBlobShape(b, dt) {
+    if (b.splitting) {
+      b.splitTime += dt;
+      const raw = Math.min(b.splitTime / 1500, 1);
+      const p = raw * raw * (3 - 2 * raw);
+
+      if (raw >= 1) {
         const distance = b.w * 1.58 * 0.28;
-        const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, b.w / 120);
-        const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, b.w / 120);
+        const left = makeBlob(b.x - Math.cos(b.splitAngle) * distance, b.y - Math.sin(b.splitAngle) * distance, (b.w / 82) * 0.7);
+        const right = makeBlob(b.x + Math.cos(b.splitAngle) * distance, b.y + Math.sin(b.splitAngle) * distance, (b.w / 82) * 0.7);
         left.shape = [...b.shape];
         right.shape = [...b.shape];
         left.rot = right.rot = b.splitAngle;
-        left.vx = -Math.cos(b.splitAngle) * 0.3;
-        left.vy = -Math.sin(b.splitAngle) * 0.3;
-        right.vx = Math.cos(b.splitAngle) * 0.3;
-        right.vy = Math.sin(b.splitAngle) * 0.3;
-        newBlobs.push(left, right);
+        left.vx = b.vx - Math.cos(b.splitAngle) * 2;
+        left.vy = b.vy - Math.sin(b.splitAngle) * 2;
+        right.vx = b.vx + Math.cos(b.splitAngle) * 2;
+        right.vy = b.vy + Math.sin(b.splitAngle) * 2;
+
+        const idx = blobs.indexOf(b);
+        if (idx !== -1) {
+          blobs.splice(idx, 1, left, right);
+          if (draggedBlob === b) draggedBlob = right;
+        }
+        return;
       }
-      blobs = newBlobs;
-      splitting = false;
+
+      const length = b.w * (1 + 0.58 * p);
+      const height = b.h * (1 - 0.05 * p);
+      const pinch = Math.max(0.001, 1 - p);
+
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(b.splitAngle);
+      ctx.beginPath();
+      const n = 72;
+      for (let i = 0; i <= n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const c = Math.cos(a);
+        const si = Math.sin(a);
+        const shape = b.shape[Math.floor((i % n) / n * b.n)];
+        const centerFactor = Math.pow(Math.abs(c), 0.62);
+        const middlePinch = pinch + (1 - pinch) * centerFactor;
+
+        let def = 0;
+        const blobIdx = Math.floor((i % n) / n * b.n);
+        if (b.deformation[blobIdx]) def = b.deformation[blobIdx];
+
+        const x = (c * length / 2 * shape) + c * def;
+        const y = (si * height / 2 * middlePinch * shape) + si * def;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(100,220,210,0.25)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(170,255,245,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(b.rot);
+      ctx.beginPath();
+      for (let i = 0; i <= b.n; i++) {
+        const j = i % b.n;
+        const a = j / b.n * Math.PI * 2;
+        const s = b.shape[j];
+        const def = b.deformation[j];
+        const x = Math.cos(a) * (b.w / 2) * s + Math.cos(a) * def;
+        const y = Math.sin(a) * (b.h / 2) * s + Math.sin(a) * def;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(100,220,210,0.25)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(170,255,245,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
     }
   }
 
@@ -217,56 +287,66 @@
   function loop(now) {
     const dt = Math.min(now - last, 32);
     last = now;
+
+    mouse.vx = mouse.x - mouse.px;
+    mouse.vy = mouse.y - mouse.py;
+    mouse.px = mouse.x;
+    mouse.py = mouse.y;
+
     ctx.clearRect(0, 0, W, H);
 
-    if (splitting) {
-      updateSplit(dt);
-    } else {
-      for (const b of blobs) {
-        if (b === draggedBlob) {
-          b.x = mouse.x - grabOffsetX;
-          b.y = mouse.y - grabOffsetY;
-          b.vx *= 0.8;
-          b.vy *= 0.8;
-        } else {
-          b.vy += gravity;
-          b.vx *= 0.995;
-          b.vy *= 0.995;
-          b.x += b.vx;
-          b.y += b.vy;
+    for (let index = blobs.length - 1; index >= 0; index--) {
+      const b = blobs[index];
 
-          const bottom = H - b.h / 2;
-          if (b.y > bottom) {
-            b.y = bottom;
-            b.vy *= -bounce;
-            b.vx *= 0.88;
-            if (Math.abs(b.vy) < 0.5) b.vy = 0;
-          }
-          const left = b.w / 2, right = W - b.w / 2;
-          if (b.x < left) { b.x = left; b.vx *= -bounce; }
-          if (b.x > right) { b.x = right; b.vx *= -bounce; }
+      let curVx = b.vx;
+      let curVy = b.vy;
+
+      if (b === draggedBlob) {
+        const targetX = mouse.x - grabOffsetX;
+        const targetY = mouse.y - grabOffsetY;
+        curVx = targetX - b.x;
+        curVy = targetY - b.y;
+        b.x = targetX;
+        b.y = targetY;
+      } else {
+        b.vx *= 0.98;
+        b.vy *= 0.98;
+        b.x += b.vx;
+        b.y += b.vy;
+
+        const top = b.h / 2, bottom = H - b.h / 2;
+        const left = b.w / 2, right = W - b.w / 2;
+
+        if (b.y < top) { b.y = top; b.vy *= -bounce; }
+        if (b.y > bottom) { b.y = bottom; b.vy *= -bounce; }
+        if (b.x < left) { b.x = left; b.vx *= -bounce; }
+        if (b.x > right) { b.x = right; b.vx *= -bounce; }
+      }
+
+      for (let i = 0; i < b.n; i++) {
+        const a = (i / b.n) * Math.PI * 2;
+        const baseX = b.x + Math.cos(a + b.rot) * (b.w / 2);
+        const baseY = b.y + Math.sin(a + b.rot) * (b.h / 2);
+        const dx = mouse.x - baseX, dy = mouse.y - baseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 45) {
+          b.deformation[i] += (1 - dist / 45) * 4;
         }
 
-        for (let i = 0; i < b.n; i++) {
-          const a = (i / b.n) * Math.PI * 2;
-          const baseX = b.x + Math.cos(a + b.rot) * (b.w / 2);
-          const baseY = b.y + Math.sin(a + b.rot) * (b.h / 2);
-          const dx = mouse.x - baseX, dy = mouse.y - baseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 35) {
-            b.deformation[i] += (1 - dist / 35) * 8;
-          }
-
-          const movement = b.vx * Math.cos(a) + b.vy * Math.sin(a);
-          b.deformationVelocity[i] -= movement * 0.25 + b.deformation[i] * 0.08;
-          b.deformationVelocity[i] *= 0.86;
-          b.deformation[i] += b.deformationVelocity[i];
-        }
-
-        drawBlob(b);
+        const moveImpact = curVx * Math.cos(a + b.rot) + curVy * Math.sin(a + b.rot);
+        b.deformationVelocity[i] -= moveImpact * 0.12 + b.deformation[i] * 0.08;
+        b.deformationVelocity[i] *= 0.85;
+        b.deformation[i] += b.deformationVelocity[i];
       }
     }
+
+    resolveSoftCollisions();
+
+    for (let index = blobs.length - 1; index >= 0; index--) {
+      drawBlobShape(blobs[index], dt);
+    }
+
     requestAnimationFrame(loop);
   }
 
