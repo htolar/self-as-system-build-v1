@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Canvas Sketch — Soft Collision Blobs</title>
+<title>Canvas Sketch — Interactive Blobs with Zoom Controls</title>
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -36,6 +36,31 @@
     font-size: 14px;
     line-height: 1.4;
   }
+  .controls-overlay {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  .zoom-btn {
+    background: rgba(11, 16, 18, 0.8);
+    color: #cfe;
+    border: 1px solid rgba(170, 255, 245, 0.4);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .zoom-btn:hover {
+    background: rgba(100, 220, 210, 0.3);
+    border-color: rgba(170, 255, 245, 0.8);
+  }
+  .zoom-btn:active {
+    transform: scale(0.95);
+  }
 </style>
 </head>
 <body>
@@ -45,7 +70,13 @@
   • Smooth, non-teleporting soft body physics<br>
   • Blobs squish and deform when pressed together<br>
   • Drag mid-split or anytime smoothly<br>
-  • Press <strong>Space</strong> to split blobs
+  • Press <strong>Space</strong> to split blobs<br>
+  • Press <strong>1</strong> to Zoom In | Press <strong>2</strong> to Zoom Out
+</div>
+
+<div class="controls-overlay">
+  <button class="zoom-btn" id="zoomInBtn">1: Zoom In (+)</button>
+  <button class="zoom-btn" id="zoomOutBtn">2: Zoom Out (-)</button>
 </div>
 
 <canvas id="canvas"></canvas>
@@ -57,14 +88,41 @@
   let W = 0, H = 0, blobs = [];
   const bounce = 0.75;
 
+  // Camera & Zoom State
+  let cameraScale = 1.0;
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 3.0;
+
   const mouse = { x: -1000, y: -1000, px: -1000, py: -1000, vx: 0, vy: 0 };
   let draggedBlob = null, grabOffsetX = 0, grabOffsetY = 0;
 
+  // Convert screen coordinates to world coordinates according to camera zoom
+  function screenToWorld(screenX, screenY) {
+    const cx = W / 2;
+    const cy = H / 2;
+    return {
+      x: (screenX - cx) / cameraScale + cx,
+      y: (screenY - cy) / cameraScale + cy
+    };
+  }
+
+  function zoomIn() {
+    cameraScale = Math.min(MAX_ZOOM, cameraScale * 1.25);
+  }
+
+  function zoomOut() {
+    cameraScale = Math.max(MIN_ZOOM, cameraScale / 1.25);
+  }
+
+  document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
+  document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
+
   canvas.addEventListener('pointerdown', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    mouse.px = e.clientX;
-    mouse.py = e.clientY;
+    const worldPos = screenToWorld(e.clientX, e.clientY);
+    mouse.x = worldPos.x;
+    mouse.y = worldPos.y;
+    mouse.px = worldPos.x;
+    mouse.py = worldPos.y;
     mouse.vx = 0;
     mouse.vy = 0;
 
@@ -84,8 +142,9 @@
   });
 
   canvas.addEventListener('pointermove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+    const worldPos = screenToWorld(e.clientX, e.clientY);
+    mouse.x = worldPos.x;
+    mouse.y = worldPos.y;
   });
 
   window.addEventListener('pointerup', () => {
@@ -138,6 +197,10 @@
     if (e.code === 'Space') {
       e.preventDefault();
       startSplit();
+    } else if (e.key === '1') {
+      zoomIn();
+    } else if (e.key === '2') {
+      zoomOut();
     }
   });
 
@@ -160,7 +223,6 @@
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Smooth velocity-based repulsion instead of instant coordinate teleportation
           const repulsionForce = overlap * 0.08;
 
           if (b1 !== draggedBlob) {
@@ -176,7 +238,6 @@
             b2.y += ny * overlap * 0.15;
           }
 
-          // Deform surface points along collision axis ("smush" effect)
           deformOnCollision(b1, nx, ny, overlap);
           deformOnCollision(b2, -nx, -ny, overlap);
         }
@@ -255,7 +316,7 @@
       ctx.fillStyle = 'rgba(100,220,210,0.25)';
       ctx.fill();
       ctx.strokeStyle = 'rgba(170,255,245,0.5)';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.5 / cameraScale;
       ctx.stroke();
       ctx.restore();
     } else {
@@ -277,7 +338,7 @@
       ctx.fillStyle = 'rgba(100,220,210,0.25)';
       ctx.fill();
       ctx.strokeStyle = 'rgba(170,255,245,0.5)';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.5 / cameraScale;
       ctx.stroke();
       ctx.restore();
     }
@@ -294,6 +355,12 @@
     mouse.py = mouse.y;
 
     ctx.clearRect(0, 0, W, H);
+
+    // Apply Camera Transformation (Zoom centered at viewport center)
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.scale(cameraScale, cameraScale);
+    ctx.translate(-W / 2, -H / 2);
 
     for (let index = blobs.length - 1; index >= 0; index--) {
       const b = blobs[index];
@@ -346,6 +413,8 @@
     for (let index = blobs.length - 1; index >= 0; index--) {
       drawBlobShape(blobs[index], dt);
     }
+
+    ctx.restore();
 
     requestAnimationFrame(loop);
   }
