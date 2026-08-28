@@ -1,5 +1,6 @@
 ```html
 <!doctype html>
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -19,6 +20,7 @@ body {
   height: 100%;
   overflow: hidden;
   background: #08080d;
+  font-family: Arial, sans-serif;
 }
 
 canvas {
@@ -31,12 +33,457 @@ canvas {
 canvas:active {
   cursor: grabbing;
 }
+
+
+/* ============================================================
+   INFORMATION TAB
+============================================================ */
+
+.info-tab {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  background: rgba(11, 16, 18, 0.78);
+  border: 1px solid rgba(170, 255, 245, 0.35);
+
+  color: rgba(210, 255, 250, 0.9);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 19px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  user-select: none;
+
+  z-index: 20;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.info-tab:hover {
+  background: rgba(100, 220, 210, 0.2);
+  border-color: rgba(170, 255, 245, 0.7);
+}
+
+.info-tab:active {
+  transform: scale(0.94);
+}
+
+
+/* ============================================================
+   INFORMATION PANEL
+============================================================ */
+
+.info-panel {
+  position: fixed;
+
+  top: 66px;
+  right: 14px;
+
+  width: min(430px, calc(100vw - 28px));
+  max-height: calc(100vh - 82px);
+
+  overflow-y: auto;
+
+  padding: 22px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(8, 12, 14, 0.94);
+
+  border:
+    1px solid rgba(170, 255, 245, 0.3);
+
+  box-shadow:
+    0 12px 45px rgba(0, 0, 0, 0.45),
+    inset 0 0 30px rgba(100, 220, 210, 0.035);
+
+  color: #d8fff8;
+
+  z-index: 19;
+
+  opacity: 0;
+  transform: translateY(-10px) scale(0.97);
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.info-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.info-panel h1 {
+  margin: 0 0 18px 0;
+
+  font-size: 21px;
+  font-weight: 700;
+
+  color: #cffff7;
+}
+
+.info-panel h2 {
+  margin:
+    20px 0 8px 0;
+
+  font-size: 14px;
+
+  color: #9ff5e7;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+}
+
+.info-panel p {
+  margin:
+    0 0 8px 0;
+
+  font-size: 13px;
+
+  line-height: 1.55;
+
+  color: rgba(220, 255, 250, 0.82);
+}
+
+.info-panel .rule {
+  margin-bottom: 9px;
+}
+
+.info-panel .system-name {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+
+/* ============================================================
+   SCROLLBAR
+============================================================ */
+
+.info-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.info-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.info-panel::-webkit-scrollbar-thumb {
+  background: rgba(170, 255, 245, 0.2);
+  border-radius: 10px;
+}
+
+
+/* ============================================================
+   SPACEBAR START UI
+============================================================ */
+
+.space-start {
+  position: fixed;
+
+  left: 50%;
+  bottom: 45px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  z-index: 10;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.space-start.hidden {
+  opacity: 0;
+  transform:
+    translateX(-50%)
+    translateY(18px)
+    scale(0.9);
+}
+
+.space-key {
+  width: 210px;
+  height: 58px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      #3b4148 0%,
+      #252a30 45%,
+      #15191d 100%
+    );
+
+  border:
+    2px solid rgba(210, 230, 235, 0.45);
+
+  box-shadow:
+    0 9px 0 #080a0c,
+    0 13px 22px rgba(0, 0, 0, 0.55),
+    inset 0 2px 3px rgba(255,255,255,0.18),
+    inset 0 -5px 8px rgba(0,0,0,0.35);
+
+  position: relative;
+
+  transform:
+    perspective(300px)
+    rotateX(8deg);
+
+  animation:
+    spaceIdle 1.8s ease-in-out infinite;
+}
+
+.space-key::before {
+  content: "";
+
+  position: absolute;
+
+  left: 13px;
+  right: 13px;
+  top: 8px;
+
+  height: 12px;
+
+  border-radius: 7px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.15),
+      rgba(255,255,255,0)
+    );
+}
+
+.space-key::after {
+  content: "";
+
+  position: absolute;
+
+  left: 18px;
+  right: 18px;
+  bottom: 7px;
+
+  height: 5px;
+
+  border-radius: 5px;
+
+  background:
+    rgba(0,0,0,0.35);
+}
+
+.space-key.pressed {
+  animation: none;
+
+  transform:
+    perspective(300px)
+    rotateX(8deg)
+    translateY(7px);
+
+  box-shadow:
+    0 2px 0 #080a0c,
+    0 5px 12px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255,255,255,0.18),
+    inset 0 -2px 5px rgba(0,0,0,0.4);
+}
+
+.space-key.flash {
+  background:
+    linear-gradient(
+      to bottom,
+      #8cecff,
+      #209cff 45%,
+      #0864c9 100%
+    );
+
+  border-color:
+    rgba(170, 245, 255, 0.95);
+
+  box-shadow:
+    0 2px 0 #063a75,
+    0 0 35px rgba(30, 170, 255, 0.9),
+    0 0 70px rgba(30, 170, 255, 0.5),
+    inset 0 2px 5px rgba(255,255,255,0.4);
+}
+
+.space-label {
+  margin-top: 15px;
+
+  color:
+    rgba(220, 255, 250, 0.85);
+
+  font-size: 13px;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 10px rgba(150,255,245,0.25);
+}
+
+
+@keyframes spaceIdle {
+
+  0%, 100% {
+    transform:
+      perspective(300px)
+      rotateX(8deg)
+      translateY(0);
+  }
+
+  50% {
+    transform:
+      perspective(300px)
+      rotateX(8deg)
+      translateY(2px);
+  }
+}
 </style>
+
 </head>
 
 <body>
 
 <canvas id="canvas"></canvas>
+
+
+<!-- ==========================================================
+     DOUBLE-CLICK TAB
+========================================================== -->
+
+<div
+  class="info-tab"
+  id="infoTab"
+  title="Double-click for information"
+>
+  i
+</div>
+
+
+<!-- ==========================================================
+     INFORMATION PANEL
+========================================================== -->
+
+<div
+  class="info-panel"
+  id="infoPanel"
+>
+
+  <h1>System Name: <span class="system-name">The Band</span></h1>
+
+  <h2>Rules</h2>
+
+  <p class="rule">
+    <strong>1. Split</strong> — when clicking space the current
+    blobs on screen split into two.
+  </p>
+
+  <p class="rule">
+    <strong>2. Draggability</strong> — when clicking and dragging
+    with the cursor on the blob it moves around.
+  </p>
+
+  <p class="rule">
+    <strong>3. Deformation</strong> — when the cursor hovers over
+    the blob it deforms to where the cursor is almost like water.
+  </p>
+
+  <p class="rule">
+    <strong>4. Color and glow</strong> — when you hover over any
+    of the blobs with your cursor it turns a random color then fades.
+  </p>
+
+  <p class="rule">
+    <strong>5. Interaction</strong> — when the blobs go next to/on
+    top of each other they get repelled/they push off each other.
+  </p>
+
+  <h2>Controls</h2>
+
+  <p>
+    Press space to split blobs in half.
+  </p>
+
+  <p>
+    Hover over the blobs to both deform them and make them light up
+    a random colour.
+  </p>
+
+  <p>
+    To get the full effect press space a good amount until you see
+    many blobs then hover over them.
+  </p>
+
+  <h2>Reflection</h2>
+
+  <p>
+    This newest version of my simulation, I feel this represents me
+    in the band I play in. I'm sure I can create cool things by
+    myself but it's more fantastic with others.
+  </p>
+
+  <p>
+    This system is different from my other tests in which it has
+    the rule split and the rule glow, and it's a lot more strict
+    with the rules now and the rules overall look better.
+  </p>
+
+  <p>
+    However it starts to feel way too noisy when the blob content
+    gets too high in which the browser starts to lag. In V2 I will
+    add more of a cap to the amount of blobs a high cap but not high
+    enough to lag the system.
+  </p>
+
+</div>
+
+
+<!-- ==========================================================
+     SPACEBAR START
+========================================================== -->
+
+<div
+  class="space-start"
+  id="spaceStart"
+>
+
+  <div
+    class="space-key"
+    id="spaceKey"
+  ></div>
+
+  <div class="space-label">
+    Click Space to Start
+  </div>
+
+</div>
+
 
 <script>
 "use strict";
@@ -52,6 +499,7 @@ const canvas =
 const ctx =
   canvas.getContext("2d");
 
+
 let W = 0;
 let H = 0;
 
@@ -61,24 +509,28 @@ const bounce = 0.75;
 
 
 /* ============================================================
-   UNLIMITED ZOOM
+   ZOOM
 ============================================================ */
 
-/*
-   There is intentionally NO minimum or maximum zoom.
-
-   Press 1 = zoom in
-   Press 2 = zoom out
-
-   You can keep doing either one forever.
-*/
-
 let cameraScale = 1;
+
+const MIN_ZOOM = 0.000001;
 
 
 /* ============================================================
    INTERACTION
 ============================================================ */
+
+/*
+   This is the interaction behavior from
+   the version you provided.
+
+   The interaction radius stays 45 world
+   pixels even when blobs become tiny.
+
+   This makes smaller blobs increasingly
+   reactive to the cursor.
+*/
 
 const INTERACTION_RADIUS = 45;
 
@@ -92,6 +544,7 @@ const COLOR_FADE_TIME = 500;
 ============================================================ */
 
 const mouse = {
+
   x: -1000,
   y: -1000,
 
@@ -102,10 +555,98 @@ const mouse = {
   vy: 0
 };
 
+
 let draggedBlob = null;
 
 let grabOffsetX = 0;
 let grabOffsetY = 0;
+
+
+/* ============================================================
+   START STATE
+============================================================ */
+
+let started = false;
+
+
+/* ============================================================
+   SPACEBAR UI
+============================================================ */
+
+const spaceStart =
+  document.getElementById("spaceStart");
+
+const spaceKey =
+  document.getElementById("spaceKey");
+
+
+function pressSpaceVisual() {
+
+  if (started)
+    return;
+
+
+  spaceKey.classList.add(
+    "pressed"
+  );
+
+
+  setTimeout(() => {
+
+    spaceKey.classList.remove(
+      "pressed"
+    );
+
+    spaceKey.classList.add(
+      "flash"
+    );
+
+  }, 90);
+
+
+  setTimeout(() => {
+
+    started = true;
+
+    spaceStart.classList.add(
+      "hidden"
+    );
+
+    startSplit();
+
+  }, 230);
+}
+
+
+/* ============================================================
+   INFORMATION TAB
+============================================================ */
+
+const infoTab =
+  document.getElementById("infoTab");
+
+const infoPanel =
+  document.getElementById("infoPanel");
+
+
+let infoOpen = false;
+
+
+infoTab.addEventListener(
+  "dblclick",
+  e => {
+
+    e.preventDefault();
+
+    infoOpen =
+      !infoOpen;
+
+    infoPanel.classList.toggle(
+      "open",
+      infoOpen
+    );
+  }
+);
 
 
 /* ============================================================
@@ -139,44 +680,22 @@ function screenToWorld(
 
 
 /* ============================================================
-   UNLIMITED ZOOM IN
+   ZOOM
 ============================================================ */
 
 function zoomIn() {
-
-  /*
-     No maximum.
-
-     Exponential zoom keeps it smooth
-     while allowing extremely large values.
-  */
 
   cameraScale *= 1.25;
 }
 
 
-/* ============================================================
-   UNLIMITED ZOOM OUT
-============================================================ */
-
 function zoomOut() {
 
-  /*
-     No minimum.
-
-     Prevent the scale from becoming exactly
-     zero because that would break division.
-  */
-
-  cameraScale /= 1.25;
-
-  if (
-    cameraScale < 0.000000000001
-  ) {
-
-    cameraScale =
-      0.000000000001;
-  }
+  cameraScale =
+    Math.max(
+      MIN_ZOOM,
+      cameraScale / 1.25
+    );
 }
 
 
@@ -193,6 +712,7 @@ canvas.addEventListener(
         e.clientX,
         e.clientY
       );
+
 
     mouse.x =
       p.x;
@@ -222,6 +742,13 @@ canvas.addEventListener(
       const b =
         blobs[i];
 
+
+      /*
+         Use the actual blob size for
+         clicking/dragging, while the
+         hover interaction itself remains
+         at 45px.
+      */
 
       const rx =
         Math.max(
@@ -260,6 +787,7 @@ canvas.addEventListener(
         draggedBlob =
           b;
 
+
         grabOffsetX =
           dx;
 
@@ -294,6 +822,7 @@ canvas.addEventListener(
         e.clientX,
         e.clientY
       );
+
 
     mouse.x =
       p.x;
@@ -359,6 +888,7 @@ function resize() {
         innerWidth
       );
 
+
   H =
     canvas.height =
       Math.max(
@@ -374,6 +904,7 @@ function resize() {
     makeSingleBlob();
   }
 }
+
 
 addEventListener(
   "resize",
@@ -391,10 +922,12 @@ function randomColor() {
     Math.random() *
     360;
 
+
   const s =
     75 +
     Math.random() *
     25;
+
 
   const l =
     50 +
@@ -441,7 +974,6 @@ function hslToRgb(
         -1,
         Math.min(
           k(n) - 3,
-
           Math.min(
             9 - k(n),
             1
@@ -516,10 +1048,7 @@ function makeBlob(
 
     shape:
       Array.from(
-        {
-          length: n
-        },
-
+        { length: n },
         () =>
           0.94 +
           Math.random() *
@@ -584,7 +1113,7 @@ function makeSingleBlob() {
 
 
 /* ============================================================
-   SPLITTING
+   START SPLIT
 ============================================================ */
 
 function startSplit() {
@@ -611,38 +1140,6 @@ function startSplit() {
 
 
 /* ============================================================
-   KEYBOARD
-============================================================ */
-
-addEventListener(
-  "keydown",
-  e => {
-
-    if (
-      e.code === "Space"
-    ) {
-
-      e.preventDefault();
-
-      startSplit();
-
-    } else if (
-      e.key === "1"
-    ) {
-
-      zoomIn();
-
-    } else if (
-      e.key === "2"
-    ) {
-
-      zoomOut();
-    }
-  }
-);
-
-
-/* ============================================================
    INTERACTION / COLOR
 ============================================================ */
 
@@ -662,11 +1159,13 @@ function updateInteraction(
 
 
   /*
-     Keep the interaction area at the
-     original 45px behavior.
+     IMPORTANT:
 
-     This remains useful even when blobs
-     become incredibly tiny.
+     The interaction radius does NOT
+     shrink with the blob.
+
+     This is what makes small blobs
+     increasingly reactive.
   */
 
   const distance =
@@ -694,26 +1193,13 @@ function updateInteraction(
       true;
 
 
-    /*
-       New random color every time
-       the cursor enters.
-    */
-
     b.hoverColor =
       randomColor();
 
 
-    /*
-       Instant color.
-    */
-
     b.colorFade =
       1;
 
-
-    /*
-       Hold for one second.
-    */
 
     b.colorTimer =
       COLOR_HOLD_TIME;
@@ -971,14 +1457,17 @@ function resolveSoftCollisions() {
             nx *
             repulsionForce;
 
+
           b1.vy -=
             ny *
             repulsionForce;
+
 
           b1.x -=
             nx *
             overlap *
             0.15;
+
 
           b1.y -=
             ny *
@@ -995,14 +1484,17 @@ function resolveSoftCollisions() {
             nx *
             repulsionForce;
 
+
           b2.vy +=
             ny *
             repulsionForce;
+
 
           b2.x +=
             nx *
             overlap *
             0.15;
+
 
           b2.y +=
             ny *
@@ -1080,9 +1572,7 @@ function deformOnCollision(
 
 
     diff =
-      Math.abs(
-        diff
-      );
+      Math.abs(diff);
 
 
     if (
@@ -1091,9 +1581,7 @@ function deformOnCollision(
     ) {
 
       const factor =
-        Math.cos(
-          diff
-        );
+        Math.cos(diff);
 
 
       b.deformationVelocity[i] -=
@@ -1106,7 +1594,7 @@ function deformOnCollision(
 
 
 /* ============================================================
-   DRAW BLOB
+   DRAW
 ============================================================ */
 
 function drawBlobShape(
@@ -1134,7 +1622,8 @@ function drawBlobShape(
 
     const raw =
       Math.min(
-        b.splitTime / 1500,
+        b.splitTime /
+        1500,
         1
       );
 
@@ -1144,10 +1633,6 @@ function drawBlobShape(
       raw *
       (3 - 2 * raw);
 
-
-    /* --------------------------------------------------------
-       SPLIT COMPLETE
-    -------------------------------------------------------- */
 
     if (
       raw >= 1
@@ -1253,11 +1738,6 @@ function drawBlobShape(
         ) *
         2;
 
-
-      /*
-         Each child gets completely
-         independent color state.
-      */
 
       left.isInteracting =
         false;
@@ -1477,6 +1957,7 @@ function drawBlobShape(
 
     ctx.restore();
 
+
   } else {
 
 
@@ -1573,19 +2054,56 @@ function drawBlobShape(
     ctx.strokeStyle =
       blobStrokeColor(b);
 
-    ctx.lineWidth =
-      Math.max(
-        0.5,
-        1.5 /
-        cameraScale
-      );
-
     ctx.stroke();
 
 
     ctx.restore();
   }
 }
+
+
+/* ============================================================
+   KEYBOARD
+============================================================ */
+
+addEventListener(
+  "keydown",
+  e => {
+
+    if (
+      e.code === "Space"
+    ) {
+
+      e.preventDefault();
+
+
+      if (
+        !started
+      ) {
+
+        pressSpaceVisual();
+
+      } else {
+
+        startSplit();
+      }
+
+
+    } else if (
+      e.key === "1"
+    ) {
+
+      zoomIn();
+
+
+    } else if (
+      e.key === "2"
+    ) {
+
+      zoomOut();
+    }
+  }
+);
 
 
 /* ============================================================
@@ -1728,6 +2246,7 @@ function loop(now) {
       b.y =
         targetY;
 
+
     } else {
 
 
@@ -1829,7 +2348,11 @@ function loop(now) {
     /* --------------------------------------------------------
        DEFORMATION
 
-       Keeps the original 45px interaction.
+       This is the reactive behavior from
+       your reference code.
+
+       The radius remains 45px even when
+       the blob becomes extremely small.
     -------------------------------------------------------- */
 
     for (
@@ -1895,6 +2418,11 @@ function loop(now) {
           dist /
           INTERACTION_RADIUS;
 
+
+        /*
+           Same strong deformation
+           response as the reference.
+        */
 
         b.deformation[i] +=
           strength *
