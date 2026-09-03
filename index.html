@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 
 <html>
@@ -73,6 +72,49 @@ canvas:active {
     transform 0.15s ease;
 }
 
+.version-tab {
+  position: fixed;
+  top: 66px;
+  right: 14px;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  background: rgba(11, 16, 18, 0.78);
+  border: 1px solid rgba(170, 255, 245, 0.35);
+
+  color: rgba(210, 255, 250, 0.9);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 19px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  user-select: none;
+
+  z-index: 20;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.version-tab:hover {
+  background: rgba(100, 220, 210, 0.2);
+  border-color: rgba(170, 255, 245, 0.7);
+}
+
+.version-tab:active {
+  transform: scale(0.94);
+}
+
 .info-tab:hover {
   background: rgba(100, 220, 210, 0.2);
   border-color: rgba(170, 255, 245, 0.7);
@@ -90,7 +132,7 @@ canvas:active {
 .info-panel {
   position: fixed;
 
-  top: 66px;
+  top: 118px;
   right: 14px;
 
   width: min(430px, calc(100vw - 28px));
@@ -372,6 +414,13 @@ canvas:active {
 
 <canvas id="canvas"></canvas>
 
+<div
+  class="version-tab"
+  title="Double-click for V2"
+>
+  V2
+</div>
+
 
 <!-- ==========================================================
      DOUBLE-CLICK TAB
@@ -382,8 +431,13 @@ canvas:active {
   id="infoTab"
   title="Double-click for information"
 >
-  i
+  V1
 </div>
+
+<div
+  class="info-panel"
+  id="versionPanel"
+></div>
 
 
 <!-- ==========================================================
@@ -508,6 +562,8 @@ let blobs = [];
 
 const bounce = 0.75;
 
+const COLLISION_EPSILON = 0.0001;
+
 
 /* ============================================================
    ZOOM
@@ -534,6 +590,8 @@ const MIN_ZOOM = 0.000001;
 */
 
 const INTERACTION_RADIUS = 45;
+
+const MIN_GRAB_RADIUS = 16;
 
 const COLOR_HOLD_TIME = 1000;
 
@@ -629,8 +687,15 @@ const infoTab =
 const infoPanel =
   document.getElementById("infoPanel");
 
+const versionTab =
+  document.querySelector(".version-tab");
+
+const versionPanel =
+  document.getElementById("versionPanel");
 
 let infoOpen = false;
+
+let versionOpen = false;
 
 
 infoTab.addEventListener(
@@ -642,13 +707,42 @@ infoTab.addEventListener(
     infoOpen =
       !infoOpen;
 
+    versionOpen =
+      false;
+
     infoPanel.classList.toggle(
       "open",
       infoOpen
     );
+
+    versionPanel.classList.remove(
+      "open"
+    );
   }
 );
 
+versionTab.addEventListener(
+  "dblclick",
+  e => {
+
+    e.preventDefault();
+
+    versionOpen =
+      !versionOpen;
+
+    infoOpen =
+      false;
+
+    versionPanel.classList.toggle(
+      "open",
+      versionOpen
+    );
+
+    infoPanel.classList.remove(
+      "open"
+    );
+  }
+);
 
 /* ============================================================
    SCREEN -> WORLD
@@ -744,24 +838,21 @@ canvas.addEventListener(
         blobs[i];
 
 
-      /*
-         Use the actual blob size for
-         clicking/dragging, while the
-         hover interaction itself remains
-         at 45px.
-      */
+      /* Keep tiny blobs easy to select at any zoom level. */
 
       const rx =
         Math.max(
           b.w / 2,
-          1
+          MIN_GRAB_RADIUS /
+            cameraScale
         );
 
 
       const ry =
         Math.max(
           b.h / 2,
-          1
+          MIN_GRAB_RADIUS /
+            cameraScale
         );
 
 
@@ -1364,9 +1455,9 @@ function resolveSoftCollisions() {
 
 
       const dist =
-        Math.sqrt(
-          dx * dx +
-          dy * dy
+        Math.hypot(
+          dx,
+          dy
         );
 
 
@@ -1390,8 +1481,7 @@ function resolveSoftCollisions() {
 
 
       if (
-        dist < minDist &&
-        dist > 0
+        dist < minDist
       ) {
 
         const overlap =
@@ -1399,14 +1489,18 @@ function resolveSoftCollisions() {
           dist;
 
 
+        const angle =
+          dist > COLLISION_EPSILON
+            ? Math.atan2(dy, dx)
+            : (i + j) * Math.PI / 3;
+
+
         const nx =
-          dx /
-          dist;
+          Math.cos(angle);
 
 
         const ny =
-          dy /
-          dist;
+          Math.sin(angle);
 
 
         const repulsionForce =
@@ -2478,4 +2572,3 @@ requestAnimationFrame(
 
 </body>
 </html>
-```
